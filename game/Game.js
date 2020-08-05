@@ -157,7 +157,7 @@ const findCollisions = function()
 		{
 			if (!Util.zero(b.v.x) && !Util.contains(bursts, b) && b.collides(ball))
 			{
-				b.v	  = { x: 0, y: 0 };
+				b.v   = { x: 0, y: 0 };
 				balls = Util.remove(balls, b);
 
 				score++;
