@@ -100,6 +100,7 @@ const update = function()
 	balls.forEach((b)  => b.update(canvas_w, canvas_h));
 	bursts.forEach((b) => b.update(canvas_w, canvas_h));
 	traces.forEach((t) => t.update(canvas_w, canvas_h));
+
 	findCollisions();
 };
 
@@ -151,13 +152,13 @@ const makeBall = function()
 
 const findCollisions = function()
 {
-	bursts.map(function(ball)
+	bursts.forEach(function(ball)
 	{
-		balls.map(function(b)
+		balls.forEach(function(b)
 		{
 			if (!Util.zero(b.v.x) && !Util.contains(bursts, b) && b.collides(ball))
 			{
-				b.v	  = { x: 0, y: 0 };
+				b.v   = { x: 0, y: 0 };
 				balls = Util.remove(balls, b);
 
 				score++;
