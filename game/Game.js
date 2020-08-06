@@ -140,7 +140,8 @@ const makeBall = function()
 	const b = Util.rand(220, 90);
 
 	const options = {
-		leaveRings: Math.random() < 0.5
+		leaveRings: Math.random() < 0.5,
+		sparks: Math.random() < 0.333
 	};
 
 	const f = function()  // ball destructor

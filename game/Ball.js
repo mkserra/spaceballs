@@ -1,9 +1,10 @@
 
 'use strict';
 
-import { Ring } from './Ring.js';
-import { Util } from '../Util.js';
-import { Vec2 } from '../physics/Vec2.js';
+import { Ring  } from './Ring.js';
+import { Spark } from './Spark.js';
+import { Util  } from '../Util.js';
+import { Vec2  } from '../physics/Vec2.js';
 
 export class Ball
 {
@@ -28,7 +29,8 @@ export class Ball
 
 		const opts = options || {};
 
-		this.ringQuotient = opts.leaveRings ? Util.rand(30, 70) : 0;
+		this.ringQuotient  = opts.leaveRings ? Util.rand(30, 70) : 0;
+		this.sparkQuotient = opts.sparks ? Util.rand(2, 11) : 0;
 
 		this.explosion  = () => null;
 		this.destructor = destructor.bind(this);
@@ -93,15 +95,20 @@ export class Ball
 
 		this.explosion = function()
 		{
+			n++;
+
 			if (n < ANIM_N / 2.25)
 			{
+				if (n % this.sparkQuotient === 0)
+				{
+					traceHandler(this.makeSpark(traceDestructor));
+				}
 				this.r = Math.floor(this.r - dR);
 				this.g = Math.floor(this.g - dG);
 				this.b = Math.floor(this.b - dB);
 
 				this.rad += dRad;
 				dRad     -= ddRad;
-				n++;
 			}
 			else if (n < ANIM_N / 1.19)
 			{
@@ -112,7 +119,6 @@ export class Ball
 				this.a   -= dA;
 				this.rad -= dRad;
 				dRad     += ddRad * 2;
-				n++;
 			}
 			else  // animation done
 			{
@@ -128,6 +134,19 @@ export class Ball
 		const b = this.b;
 
 		return new Ring(this.p, r, g, b, this.rad, destructor);
+	}
+
+	makeSpark(destructor)
+	{
+		const r = Math.min(255, this.r + 170);
+		const g = Math.min(255, this.g + 100);
+		const b = Math.min(255, this.b + 100);
+
+		const x = Util.rand(1, 11);
+		const y = Util.rand(1, 11);
+		const o = new Vec2(x, y).rotate(new Vec2(0, 0), Util.rand(1, 364));
+
+		return new Spark(this.p, o, r, g, b, destructor);
 	}
 
 	collides(ball)

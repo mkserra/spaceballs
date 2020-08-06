@@ -2,7 +2,6 @@
 'use strict';
 
 import { Util } from '../Util.js';
-import { Vec2 } from '../physics/Vec2.js';
 
 export class Ring
 {
