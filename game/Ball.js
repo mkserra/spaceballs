@@ -138,9 +138,13 @@ export class Ball
 
 	makeSpark(destructor)
 	{
-		const r = Math.min(255, this.r + 170);
-		const g = Math.min(255, this.g + 100);
-		const b = Math.min(255, this.b + 100);
+		const dR = Math.max(this.r, Math.max(this.g, this.b)) === this.r ? 170 : 100;
+		const dG = Math.max(this.g, Math.max(this.r, this.b)) === this.g ? 170 : 100;
+		const dB = Math.max(this.b, Math.max(this.g, this.r)) === this.b ? 170 : 100;
+
+		const r = Math.min(255, this.r + dR);
+		const g = Math.min(255, this.g + dG);
+		const b = Math.min(255, this.b + dB);
 
 		const x = Util.rand(1, 11);
 		const y = Util.rand(1, 11);

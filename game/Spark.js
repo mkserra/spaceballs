@@ -16,6 +16,10 @@ export class Spark
 		this.b = b;
 		this.a = 0.9;
 
+		this.dR = Math.max(r, Math.max(g, b)) === r ? 0 : 1;
+		this.dG = Math.max(g, Math.max(r, b)) === g ? 0 : 1;
+		this.dB = Math.max(b, Math.max(g, r)) === b ? 0 : 1;
+
 		this.rad  = Util.rand(1, 4);
 		this.life = 0;
 
@@ -46,9 +50,9 @@ export class Spark
 		{
 			this.destructor();
 		}
-		this.r = Math.max(35, this.r - 0);
-		this.g = Math.max(35, this.g - 1);
-		this.b = Math.max(35, this.b - 1);
+		this.r = Math.max(35, this.r - this.dR);
+		this.g = Math.max(35, this.g - this.dG);
+		this.b = Math.max(35, this.b - this.dB);
 
 		this.a -= 0.0025;
 	}
