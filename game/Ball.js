@@ -29,8 +29,10 @@ export class Ball
 
 		this.v = new Vec2(Util.randSign() * x, Util.randSign() * y);
 
-		this.icy = b > 1.25 * r && b > 1.25 * g;
-		this.iceTime = 0;
+		this.electric = r > 1.25 * b && g > 1.25 * b && Math.abs(r - g) < 30;
+		this.haltTime = 0;
+
+		console.log(this.electric);
 
 		const opts = options || {};
 
@@ -61,9 +63,9 @@ export class Ball
 		gc.closePath();
 		gc.fill();
 
-		if (this.iceTime > 1)  // show icy overlay when frozen
+		if (this.haltTime > 1)  // show electric overlay
 		{
-			gc.fillStyle = 'rgba(220, 220, 255, ' + 0.01 * this.iceTime + ')';
+			gc.fillStyle = 'rgba(240, 240, 200, ' + 0.005 * this.haltTime + ')';
 
 			gc.beginPath();
 			gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
@@ -74,9 +76,9 @@ export class Ball
 
 	update(xres, yres)
 	{
-		if (this.iceTime > 1)  // ball is frozen
+		if (this.haltTime > 1)  // electric ball halted
 		{
-			this.iceTime--;
+			this.haltTime--;
 			return;
 		}
 		this.move(xres, yres);
@@ -120,9 +122,9 @@ export class Ball
 				{
 					traceHandler(this.makeRing(traceDestructor));
 				}
-				if (this.icy && n % 50 === 0)
+				if (this.electric && n % 50 === 0)
 				{
-					this.iceTime = Util.rand(32, 120);
+					this.haltTime = Util.rand(48, 250);
 				}
 				this.a   -= dA;
 				this.rad -= dRad;
