@@ -63,8 +63,8 @@ export class Ball
 
 		if (this.iceTime > 1)  // show icy ring when frozen
 		{
-			gc.strokeStyle = 'rgba(210, 210, 255, ' + 1.25 * this.a + ')';
-			gc.lineWidth   = 1.5;
+			gc.strokeStyle = 'rgba(200, 200, 240, ' + 1.3 * this.a + ')';
+			gc.lineWidth   = 3.0;
 
 			gc.beginPath();
 			gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
