@@ -29,10 +29,9 @@ export class Ball
 
 		this.v = new Vec2(Util.randSign() * x, Util.randSign() * y);
 
-		this.electric = r > 1.25 * b && g > 1.25 * b && Math.abs(r - g) < 30;
-		this.haltTime = 0;
-
-		console.log(this.electric);
+		this.electric  = r > 1.25 * b && g > 1.25 * b && Math.abs(r - g) < 30;
+		this.haltTime  = 0;
+		this.lightning = false;   // show lightning animation?
 
 		const opts = options || {};
 
@@ -71,6 +70,17 @@ export class Ball
 			gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
 			gc.closePath();
 			gc.fill();
+		}
+		if (this.lightning === true)
+		{
+			gc.fillStyle = 'rgba(255, 255, 235, 1)';
+
+			gc.beginPath();
+			gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
+			gc.closePath();
+			gc.fill();
+
+			this.lightning = false;
 		}
 	}
 
@@ -124,7 +134,7 @@ export class Ball
 				}
 				if (this.electric && n % 50 === 0)
 				{
-					this.haltTime = Util.rand(48, 250);
+					this.electrify();
 				}
 				this.a   -= dA;
 				this.rad -= dRad;
@@ -135,6 +145,12 @@ export class Ball
 				this.destructor();
 			}
 		};
+	}
+
+	electrify()
+	{
+		this.haltTime  = Util.rand(48, 250);
+		this.lightning = true;
 	}
 
 	move(xres, yres)
