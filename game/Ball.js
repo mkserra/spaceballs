@@ -29,10 +29,13 @@ export class Ball
 
 		this.v = new Vec2(Util.randSign() * x, Util.randSign() * y);
 
+		this.icy = b > 1.25 * r && b > 1.25 * g;
+		this.iceTime = 0;
+
 		const opts = options || {};
 
-		this.ringQuotient  = opts.leaveRings ? Util.rand(30, 70) : 0;
-		this.sparkQuotient = opts.sparks ? Util.rand(2, 11) : 0;
+		this.ringMod  = (opts.leaveRings && !this.icy) ? Util.rand(30, 70) : 0;
+		this.sparkMod = opts.sparks ? Util.rand(2, 11) : 0;
 
 		this.explosion  = () => null;
 		this.destructor = destructor.bind(this);
@@ -57,28 +60,28 @@ export class Ball
 		gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
 		gc.closePath();
 		gc.fill();
+
+		if (this.iceTime > 1)  // show icy ring when frozen
+		{
+			gc.strokeStyle = 'rgba(210, 210, 255, ' + 1.25 * this.a + ')';
+			gc.lineWidth   = 1.5;
+
+			gc.beginPath();
+			gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
+			gc.closePath();
+			gc.stroke();
+		}
 	}
 
 	update(xres, yres)
 	{
+		if (this.iceTime > 1)  // ball is frozen
+		{
+			this.iceTime--;
+			return;
+		}
 		this.move(xres, yres);
-		this.explosion();		// does nothing if ball not yet burst
-	}
-
-	move(xres, yres)
-	{
-		this.p = this.p.add(this.v);
-
-		const p = this.bounds();
-
-		if (p.x < 1 || p.x2 > xres - 1)
-		{
-			this.v.x *= -1;
-		}
-		else if (p.y < 1 || p.y2 > yres - 1)
-		{
-			this.v.y *= -1;
-		}
+		this.explosion();
 	}
 
 	explode(traceHandler, traceDestructor)
@@ -99,9 +102,9 @@ export class Ball
 		{
 			n++;
 
-			if (n < ANIM_N / 2.25)
+			if (n < ANIM_N / 2.25)  // explosion expanding
 			{
-				if (n % this.sparkQuotient === 0)
+				if (n % this.sparkMod === 0)
 				{
 					traceHandler(this.makeSpark(traceDestructor));
 				}
@@ -112,11 +115,15 @@ export class Ball
 				this.rad += dRad;
 				dRad     -= ddRad;
 			}
-			else if (n < ANIM_N / 1.19)
+			else if (n < ANIM_N / 1.19)  // explosion shrinking
 			{
-				if (n % this.ringQuotient === 0)
+				if (n % this.ringMod === 0)
 				{
 					traceHandler(this.makeRing(traceDestructor));
+				}
+				if (this.icy && n % 50 === 0)
+				{
+					this.iceTime = Util.rand(32, 120);
 				}
 				this.a   -= dA;
 				this.rad -= dRad;
@@ -127,6 +134,22 @@ export class Ball
 				this.destructor();
 			}
 		};
+	}
+
+	move(xres, yres)
+	{
+		this.p = this.p.add(this.v);
+
+		const p = this.bounds();
+
+		if (p.x < 1 || p.x2 > xres - 1)
+		{
+			this.v.x *= -1;
+		}
+		else if (p.y < 1 || p.y2 > yres - 1)
+		{
+			this.v.y *= -1;
+		}
 	}
 
 	makeRing(destructor)
