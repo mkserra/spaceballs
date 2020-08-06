@@ -34,7 +34,7 @@ export class Ball
 
 		const opts = options || {};
 
-		this.ringMod  = (opts.leaveRings && !this.icy) ? Util.rand(30, 70) : 0;
+		this.ringMod  = opts.leaveRings ? Util.rand(30, 70) : 0;
 		this.sparkMod = opts.sparks ? Util.rand(2, 11) : 0;
 
 		this.explosion  = () => null;
@@ -61,15 +61,14 @@ export class Ball
 		gc.closePath();
 		gc.fill();
 
-		if (this.iceTime > 1)  // show icy ring when frozen
+		if (this.iceTime > 1)  // show icy overlay when frozen
 		{
-			gc.strokeStyle = 'rgba(200, 200, 240, ' + 1.3 * this.a + ')';
-			gc.lineWidth   = 3.0;
+			gc.fillStyle = 'rgba(220, 220, 255, ' + 0.01 * this.iceTime + ')';
 
 			gc.beginPath();
 			gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
 			gc.closePath();
-			gc.stroke();
+			gc.fill();
 		}
 	}
 
