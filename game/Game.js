@@ -30,7 +30,6 @@ var gc = $('#canvas')[0].getContext('2d');
 
 gc.canvas.width  = canvas_w;
 gc.canvas.height = canvas_h;
-gc.font = '25px monospace';
 
 export const main = function()
 {
@@ -54,9 +53,8 @@ const adaptToViewport = function()
 		x_margin = (VIEW_W - canvas_w) / 2;
 		y_margin = (VIEW_H - canvas_h) / 2;
 
-		gc.canvas.width  = canvas_w;		// For some reason, this
-		gc.canvas.height = canvas_h;		// resets the canvas font..?
-		gc.font = '25px monospace';
+		gc.canvas.width  = canvas_w;	// For some reason, this
+		gc.canvas.height = canvas_h;	// resets the canvas font..?
 
 		UI.setScale(VIEW_W / PLAYFIELD_W);
 	}
@@ -130,7 +128,7 @@ const draw = function()
 	}
 };
 
-const makeBall = function()
+const makeBall = function(opts)
 {
 	const radius = Ball.RADIUS * UI.getScale();
 
@@ -140,7 +138,7 @@ const makeBall = function()
 	const g = Util.rand(220, 90);
 	const b = Util.rand(220, 90);
 
-	const options = {
+	const options = opts || {
 		leaveRings: Math.random() < 0.666,
 		sparks: Math.random() < 0.45
 	};
@@ -180,14 +178,24 @@ const endingAnimationClosure = function()
 {
 	let s = new Vec2(1, 1);
 
-	const o = Vec2.centroid(traces.map((t) => t.p).concat(
-		[new Vec2(canvas_w / 2, canvas_h / 2)]));
+	// Zoom into the centroid of the remaining traces,
+	// with a bias toward the canvas center. Smaller
+	// screens require a greater bias.
+
+	const bias = [new Vec2(canvas_w / 2, canvas_h / 2)];
+
+	for (let i = UI.getScale(); i < 1; i += 0.03)
+	{
+		bias.push(new Vec2(canvas_w / 2, canvas_h / 2));
+	}
+	const o = Vec2.centroid(traces.map((t) => t.p).concat(bias));
 
 	return function()
 	{
-		const xo = score.toString().length * 7.5 * UI.getScale();
+		const scale = UI.getScale();
+		const xOff  = score.toString().length * 7.5;
 
-		if (s.x > 1.09 - (UI.getScale() < 1 ? UI.getScale() * 0.025 : 0))
+		if (s.x > 1.09 - (scale < 1 ? scale * 0.025 : 0))
 		{
 			begun = null;
 			return;
@@ -203,10 +211,11 @@ const endingAnimationClosure = function()
 		balls.forEach((b)  => b.draw(gc));
 
 		gc.strokeStyle = 'rgba(255, 255, 255, 1.0)'; 
-		gc.lineWidth   = 1.0; 
+		gc.lineWidth = 1.0; 
+		gc.font = Math.floor(scale * 25) + 'px monospace';
 
-		gc.strokeText(score, o.x - xo, o.y + 8, 90);
-		gc.fillText(  score, o.x - xo, o.y + 8, 90);
+		gc.strokeText(score, o.x - xOff, o.y + 8, 90);
+		gc.fillText(score,   o.x - xOff, o.y + 8, 90);
 	};
 };
 
@@ -226,7 +235,7 @@ const clickHandler = function()
 		}
 		begun = true;
 
-		const ball = makeBall();
+		const ball = makeBall({ leaveRings: true, sparks: true });
 
 		ball.p.x = e.pageX - 10 - x_margin;
 		ball.p.y = e.pageY - 10 - y_margin;
