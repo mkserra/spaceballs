@@ -1,6 +1,7 @@
 
 'use strict';
 
+import {  UI  } from './UI.js';
 import { Util } from '../Util.js';
 
 export class Ring
@@ -24,7 +25,7 @@ export class Ring
 		gc.strokeStyle = 'rgba(' + this.r + ',' + this.g + ','
 			+ this.b + ',' + this.a + ')';
 
-		gc.lineWidth = 2.0;
+		gc.lineWidth = 2.0 * UI.getScale();
 
 		gc.beginPath();
 		gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);

@@ -1,6 +1,7 @@
 
 'use strict';
 
+import {  UI  } from './UI.js';
 import { Util } from '../Util.js';
 
 export class Spark
@@ -20,7 +21,7 @@ export class Spark
 		this.dG = Math.max(g, Math.max(r, b)) === g ? 0 : 1;
 		this.dB = Math.max(b, Math.max(g, r)) === b ? 0 : 1;
 
-		this.rad  = Util.rand(1, 4);
+		this.rad  = Util.rand(1, 4 * UI.getScale());
 		this.life = 0;
 
 		this.id = Util.rand(999999999);   // 100 IDs = 0.000005 chance collision

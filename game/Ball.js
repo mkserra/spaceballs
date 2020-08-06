@@ -3,14 +3,16 @@
 
 import { Ring  } from './Ring.js';
 import { Spark } from './Spark.js';
+import {  UI   } from './UI.js';
 import { Util  } from '../Util.js';
 import { Vec2  } from '../physics/Vec2.js';
+
 
 export class Ball
 {
 	static RADIUS = 12;
 
-	constructor(p, r, g, b, radius, destructor, velocityScale, options)
+	constructor(p, r, g, b, destructor, options)
 	{
 		this.p = p;		// initial position Vec2
 		this.r = r;		// red
@@ -18,14 +20,14 @@ export class Ball
 		this.b = b;		// blue
 		this.a = 0.8;	// alpha
 
-		this.rad = radius;
+		this.rad = Ball.RADIUS * UI.getScale();
 
 		this.id = Util.rand(999999999);   // 100 IDs = 0.000005 chance collision
 
-		const s = velocityScale || 1;  // set initial velocity
+		const x = (Math.random() + 0.25) * (UI.getScale() - 0.15);
+		const y = (Math.random() + 0.25) * (UI.getScale() - 0.15);
 
-		this.v = new Vec2(Util.randSign() * ((Math.random() + 0.25) * s),
-			Util.randSign() * ((Math.random() + 0.25) * s));
+		this.v = new Vec2(Util.randSign() * x, Util.randSign() * y);
 
 		const opts = options || {};
 
@@ -146,8 +148,9 @@ export class Ball
 		const g = Math.min(255, this.g + dG);
 		const b = Math.min(255, this.b + dB);
 
-		const x = Util.rand(1, 11);
-		const y = Util.rand(1, 11);
+		const x = Util.rand(1, 11 * UI.getScale());
+		const y = Util.rand(1, 11 * UI.getScale());
+
 		const o = new Vec2(x, y).rotate(new Vec2(0, 0), Util.rand(1, 364));
 
 		return new Spark(this.p, o, r, g, b, destructor);

@@ -3,6 +3,7 @@
 
 import { Ball } from './Ball.js';
 import { Util } from '../Util.js';
+import {  UI  } from './UI.js';
 import { Vec2 } from '../physics/Vec2.js';
 
 const VIEW_W = Math.max($(document).width()  || 0, window.innerWidth  || 0);
@@ -56,6 +57,8 @@ const adaptToViewport = function()
 		gc.canvas.width  = canvas_w;		// For some reason, this
 		gc.canvas.height = canvas_h;		// resets the canvas font..?
 		gc.font = '25px monospace';
+
+		UI.setScale(VIEW_W / PLAYFIELD_W);
 	}
 	$('#canvas').css('border', '1px solid white');
 	$('#canvas').css('margin-left', x_margin);
@@ -129,13 +132,7 @@ const draw = function()
 
 const makeBall = function()
 {
-	let s = 1;  // on small screens, decrease ball radius and speed
-
-	if (VIEW_W < PLAYFIELD_W || VIEW_H < PLAYFIELD_H)
-	{
-		s = VIEW_W / PLAYFIELD_W;
-	}
-	const radius = Ball.RADIUS * s;
+	const radius = Ball.RADIUS * UI.getScale();
 
 	const x = Util.rand(canvas_w - radius * 2, radius * 2);
 	const y = Util.rand(canvas_h - radius * 2, radius * 2);
@@ -152,7 +149,7 @@ const makeBall = function()
 	{
 		bursts = Util.remove(bursts, this);
 	};
-	return new Ball(new Vec2(x, y), r, g, b, radius, f, s, options);
+	return new Ball(new Vec2(x, y), r, g, b, f, options);
 };
 
 const findCollisions = function()
@@ -188,9 +185,9 @@ const endingAnimationClosure = function()
 
 	return function()
 	{
-		const xo = score.toString().length * 7.5;
+		const xo = score.toString().length * 7.5 * UI.getScale();
 
-		if (s.x > 1.09)
+		if (s.x > 1.09 - (UI.getScale() < 1 ? UI.getScale() * 0.025 : 0))
 		{
 			begun = null;
 			return;
