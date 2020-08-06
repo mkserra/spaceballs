@@ -67,5 +67,18 @@ export class Vec2
 
 		return Math.sqrt(x * x + y * y);
 	}
+
+	static centroid(vs)
+	{
+		let x = 0;
+		let y = 0;
+
+		for (let i = 0; i < vs.length; i++)
+		{
+			x += vs[i].x;
+			y += vs[i].y;
+		}
+		return new Vec2(x / vs.length, y / vs.length);
+	}
 }
 

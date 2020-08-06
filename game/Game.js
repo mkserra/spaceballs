@@ -112,6 +112,10 @@ const draw = function()
 	}
 	else if (begun && bursts.length === 0)
 	{
+		if (endingAnimation === null)
+		{
+			endingAnimation = endingAnimationClosure();
+		}
 		endingAnimation();
 	}
 	else  // main loop
@@ -141,7 +145,7 @@ const makeBall = function()
 
 	const options = {
 		leaveRings: Math.random() < 0.666,
-		sparks: Math.random() < 0.333
+		sparks: Math.random() < 0.45
 	};
 
 	const f = function()  // ball destructor
@@ -175,9 +179,12 @@ const findCollisions = function()
 	});
 };
 
-const endingAnimation = (function()
+const endingAnimationClosure = function()
 {
 	let s = new Vec2(1, 1);
+
+	const o = Vec2.centroid(traces.map((t) => t.p).concat(
+		[new Vec2(canvas_w / 2, canvas_h / 2)]));
 
 	return function()
 	{
@@ -190,9 +197,9 @@ const endingAnimation = (function()
 		}
 		s = s.add(new Vec2(0.0015, 0.0015));
 
-		gc.translate(canvas_w / 2, canvas_h / 2);
+		gc.translate(o.x, o.y);
 		gc.scale(s.x, s.y);
-		gc.translate(-canvas_w / 2, -canvas_h / 2);
+		gc.translate(-o.x, -o.y);
 		gc.clearRect(0, 0, canvas_w, canvas_h);
 
 		traces.forEach((t) => t.draw(gc));
@@ -201,10 +208,12 @@ const endingAnimation = (function()
 		gc.strokeStyle = 'rgba(255, 255, 255, 1.0)'; 
 		gc.lineWidth   = 1.0; 
 
-		gc.strokeText(score, canvas_w / 2 - xo, canvas_h / 2 + 8, 90);
-		gc.fillText(  score, canvas_w / 2 - xo, canvas_h / 2 + 8, 90);
+		gc.strokeText(score, o.x - xo, o.y + 8, 90);
+		gc.fillText(  score, o.x - xo, o.y + 8, 90);
 	};
-})();
+};
+
+var endingAnimation = null;
 
 const clickHandler = function()
 {
