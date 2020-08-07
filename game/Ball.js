@@ -1,6 +1,7 @@
 
 'use strict';
 
+import { Color } from './Color.js';
 import { Ring  } from './Ring.js';
 import { Spark } from './Spark.js';
 import {  UI   } from './UI.js';
@@ -29,7 +30,7 @@ export class Ball
 
 		this.v = new Vec2(Util.randSign() * x, Util.randSign() * y);
 
-		this.electric  = r > 1.25 * b && g > 1.25 * b && Math.abs(r - g) < 30;
+		this.electric  = Color.isYellow(r, g, b);
 		this.haltTime  = 0;
 		this.lightning = false;   // show lightning animation?
 
@@ -73,7 +74,7 @@ export class Ball
 		}
 		if (this.lightning === true)
 		{
-			gc.fillStyle = 'rgba(255, 255, 235, 1)';
+			gc.fillStyle = 'rgba(255, 255, 210, 1)';
 
 			gc.beginPath();
 			gc.arc(this.p.x, this.p.y, this.rad, 0, 2 * Math.PI);
